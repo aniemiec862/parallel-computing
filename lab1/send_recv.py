@@ -8,6 +8,7 @@ rank = comm.Get_rank()
 test_count = 100
 bytes_to_send = int(sys.argv[1])
 message = "A" * bytes_to_send
+res = []
 
 def ping_pong():
     comm.Barrier()
@@ -28,11 +29,15 @@ summed_time = 0
 
 for i in range(test_count):
     time = ping_pong()
+    res.append(time)
     summed_time = summed_time + time
 
 if rank == 0:
     result = summed_time / test_count
-    speed_in_mega_bits = (bytes_to_send * 8 / result) / 1000000
+    # speed_in_mega_bits = (bytes_to_send * 8 / result) / 1000000
+    res.sort()
+    median = (res[50]+res[51])/2
+    speed_in_mega_bits = (bytes_to_send * 8 / median) / 1000000
 
     output = "{bytes};{speed}".format(bytes=bytes_to_send, speed=speed_in_mega_bits)
     print output
