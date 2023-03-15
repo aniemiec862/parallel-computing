@@ -6,17 +6,20 @@ import sys
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
-size = comm.Get_size()
+threads_number = comm.Get_size()
+
 
 def get_random_point():
     return random.random(), random.random()
 
+
 def is_inside(x, y):
     return (x ** 2 + y ** 2) < 1
 
+
 points_to_generate = int(sys.argv[1])
 points_inside = 0
-points_per_node = points_to_generate // size
+points_per_node = points_to_generate // threads_number
 
 comm.Barrier()
 start = MPI.Wtime()
@@ -32,5 +35,6 @@ if rank == 0:
     stop = MPI.Wtime()
     time = stop - start
 
-    output = "{size};{time};{points_total}".format(size=size, time=time, points_total=points_total)
-    print output
+    output = "{threads_number};{time};{points_to_generate}" \
+        .format(threads_number=threads_number, time=time, points_to_generate=points_to_generate)
+    print(output)
