@@ -34,7 +34,6 @@ for i in range(test_count):
 
 if rank == 0:
     result = summed_time / test_count
-    # speed_in_mega_bits = (bytes_to_send * 8 / result) / 1000000
     res.sort()
     median = (res[50]+res[51])/2
     speed_in_mega_bits = (bytes_to_send * 8 / median) / 1000000

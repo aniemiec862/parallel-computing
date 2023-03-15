@@ -21,7 +21,7 @@ points_per_node = points_to_generate // size
 comm.Barrier()
 start = MPI.Wtime()
 
-for _ in xrange(points_per_node):
+for _ in range(points_per_node):
     x, y = get_random_point()
     if is_inside(x, y):
         points_inside += 1
