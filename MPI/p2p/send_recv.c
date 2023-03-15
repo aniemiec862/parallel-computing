@@ -22,16 +22,12 @@ void receiver(int msg_size) {
     }
 }
 
-void test(int rank) {
-    printf("N  msg_size  time \n");
-    int msg_size;
-    for (msg_size = 1; msg_size <= MAX_MESSAGE_SIZE; msg_size *= 2) {
-        if (rank == SENDER) {
-            double time = sender(msg_size);
-            printf("%f  \n", N*msg_size/(64*1024*time));
-        } else if (rank == RECEIVER) {
-            receiver(msg_size);
-        }
+void test(long msg_size, int rank) {
+    if (rank == SENDER) {
+        double time = sender(msg_size);
+        printf("%d;%f  \n", msg_size, N*msg_size/(64*1024*time));
+    } else if (rank == RECEIVER) {
+        receiver(msg_size);
     }
 }
 
@@ -41,8 +37,8 @@ int main(int argc, char *argv[]) {
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    test(rank);
+    long msg_size = argv[1];
+    test(msg_size, rank);
 
     MPI_Finalize();
     return 0;
