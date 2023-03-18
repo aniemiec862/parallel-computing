@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import division
 from mpi4py import MPI
 import random
 import sys
@@ -35,6 +34,4 @@ if rank == 0:
     stop = MPI.Wtime()
     time = stop - start
 
-    output = "{threads_number};{time};{points_to_generate}" \
-        .format(threads_number=threads_number, time=time, points_to_generate=points_to_generate)
-    print(output)
+    print(f"{points_to_generate};{threads_number};{time}")

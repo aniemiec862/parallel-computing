@@ -29,7 +29,6 @@ summed_time = 0
 
 for i in range(test_count):
     time = ping_pong()
-    res.append(time)
     summed_time = summed_time + time
 
 if rank == 0:
