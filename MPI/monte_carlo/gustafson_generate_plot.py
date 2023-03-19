@@ -57,7 +57,7 @@ bigTimeData = (
 
 
 def drawPlot(xAndY, dataLabel, color, isSemiTransparent = False):
-    plt.plot(xAndY[0], xAndY[1], linestyle='--', marker='o', color=color, label=dataLabel, alpha=0.2 if isSemiTransparent else 1)
+    plt.plot(xAndY[0], xAndY[1], linestyle=':', marker='D', color=color, label=dataLabel, alpha=0.2 if isSemiTransparent else 1)
 
 
 def drawAllTimesPlot():
