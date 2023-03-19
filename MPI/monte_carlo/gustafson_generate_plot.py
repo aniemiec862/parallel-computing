@@ -17,7 +17,7 @@ with open(csvFile, 'r') as csvfile:
     times = []
 
     for index, row in enumerate(plots):
-        threads, time, size = row
+        size, threads, time = row
         lineNumber = index + 1
 
         times.append(float(time))

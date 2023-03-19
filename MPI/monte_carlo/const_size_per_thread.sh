@@ -7,7 +7,7 @@
 
 module add scipy-bundle/2021.10-foss-2021b
 
-for pointsPerThread in 10000 3535533 1250000000
+for pointsPerThread in 100000 11180339 1250000000
 do
     for threads in {1..12}
     do
