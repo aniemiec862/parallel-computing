@@ -1,1 +1,1 @@
-# Parallel-processing
+# Parallel-computing
