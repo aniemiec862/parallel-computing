@@ -1,6 +1,11 @@
-g++ -Wall rand_numbers.c -o rand_numbers -fopenmp
+rm results.csv
 
-./rand_numbers 1 $1
-./rand_numbers 2 $1
-./rand_numbers 3 $1
-./rand_numbers 4 $1
+values=10000000,50000000,100000000
+
+for val in ${values//,/ }
+do
+    for threads in {1..4}
+    do
+        ./rand_numbers $threads $val >> results.csv
+    done
+done

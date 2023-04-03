@@ -5,7 +5,7 @@
 
 int main (int argc, char* argv[]) {
     int num_threads = atoi(argv[1]);
-    unsigned long long array_size = strtoull(argv[2], NULL, 10);
+    int array_size = atoi(argv[2]);
 
     double* array = (double*) malloc(sizeof(double) * array_size);
     double start_time, end_time;
@@ -14,12 +14,12 @@ int main (int argc, char* argv[]) {
     #pragma omp parallel num_threads(num_threads)
     {
         unsigned short xi[3];
-        xi[0] = (unsigned short)time(NULL) + omp_get_thread_num();
-        xi[1] = (unsigned short)(time(NULL) >> 16) + omp_get_thread_num();
+        xi[0] = 0;
+        xi[1] = 0;
         xi[2] = 0;
 
-        #pragma omp for
-        for (unsigned long long i = 0; i < array_size; i++) {
+        #pragma omp for schedule(static)
+        for (int i = 0; i < array_size; i++) {
             array[i] = erand48(xi);
         }
     }
