@@ -29,7 +29,7 @@ for filename in filenames:
 
     for group_name, group_data in groups:
         speedup = group_data.iloc[0, 1] / group_data.iloc[:, 1]
-        ax2.plot(group_data.iloc[:, 0], speedup, linestyle='--', marker='D', label=f'array_chart: {group_name}')
+        ax2.plot(group_data.iloc[:, 0], speedup, linestyle='--', marker='D', label=f'array size: {group_name}')
 
     ax2.set_xlabel('Number of threads')
     ax2.set_ylabel('Speedup')
