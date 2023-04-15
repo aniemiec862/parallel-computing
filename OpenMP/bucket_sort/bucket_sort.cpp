@@ -21,9 +21,8 @@
 
 #define LOG(...) printf(__VA_ARGS__)
 
-#define TIME_SCALE_FACTOR 1e6
-#define TIME_MEASURE_BEGIN(x) ((x) = omp_get_wtime() * TIME_SCALE_FACTOR)
-#define TIME_MEASURE_END(x) ((x) = omp_get_wtime() * TIME_SCALE_FACTOR - (x))
+#define TIME_MEASURE_BEGIN(x) ((x) = omp_get_wtime())
+#define TIME_MEASURE_END(x) ((x) = omp_get_wtime() - (x))
 
 using Data_t = double;
 using ArrSize_t = uint64_t;
@@ -73,17 +72,15 @@ static bool summary(Data_t *data, const Args &args);
 // Assumes that rstate consists of 3 * 16 bytes.
 inline static int32_t init_rand_state(uint16_t *rstate);
 
-ExpResult bucket_sort_1(Data_t *data, const ExpCfg cfg) {
+ExpResult bucket_sort_1(Data_t *data, ExpCfg cfg) {
   LOG_DEBUG("bucket_sort_1 called with data: %p, size: %ld, n_buckets: %ld, n_threads: %d\n", data, cfg.args.arr_size, cfg.args.n_buckets, cfg.args.n_threads);
 
   uint16_t rstate[3];
-  double thread_range;
 
   ExpResult result{};
   result.cfg = cfg;
 
   std::vector<std::vector<Data_t>> buckets(cfg.args.n_buckets);
-  // std::vector<Data_t> buckets[cfg.args.n_buckets];
 
   TIME_MEASURE_BEGIN(result.total_time);
 
@@ -91,7 +88,7 @@ ExpResult bucket_sort_1(Data_t *data, const ExpCfg cfg) {
   // I'm also not sure whether there is any synchornization on shared variable,
   // could not f  #pragma omp single ind the info in reference.
   // #pragma omp parallel private(rstate, tid, buckets, thread_range)
-  #pragma omp parallel private(rstate, thread_range) shared(data, buckets, cfg)
+  #pragma omp parallel private(rstate) shared(data, buckets, cfg)
   {
     // threadprivate memory
     ExpResult p_result{};
@@ -106,14 +103,15 @@ ExpResult bucket_sort_1(Data_t *data, const ExpCfg cfg) {
     TIME_MEASURE_END(p_result.draw_time);
     
     TIME_MEASURE_BEGIN(p_result.scatter_time);
-    thread_range = static_cast<double>(1.0) / static_cast<double>(cfg.args.n_threads);
 
     // Every thread reads entire array (starting from the same index)
     // TODO: Reorganize so that threads do not read same indexes at the same time
+    #pragma omp for schedule(static)
     for (ArrSize_t i = 0; i < cfg.args.arr_size; ++i) {
-      if (data[i] >= tid * thread_range && data[i] < (tid + 1) * thread_range) {
-        buckets[(static_cast<int>(data[i] * cfg.args.n_buckets))].push_back(data[i]);
-      }
+        #pragma omp critical
+        {
+            buckets[(static_cast<int>(data[i] * cfg.args.n_buckets))].push_back(data[i]);
+        }
     }
     TIME_MEASURE_END(p_result.scatter_time);
 
@@ -165,6 +163,7 @@ ExpResult bucket_sort_1(Data_t *data, const ExpCfg cfg) {
     }
   }
   TIME_MEASURE_END(result.total_time);
+  print_arr(data, )
   return result;
 }
 
