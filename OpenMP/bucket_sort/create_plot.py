@@ -7,7 +7,7 @@ LEGEND = ['Generating', 'Scattering',
           'Sorting', 'Merging', 'Total']
 
 SYNC_FILE_PATH = 'sync.csv'
-ASYNC_FILE_PATH = 'async.csv'
+ASYNC_FILE_PATH = 'async_500.csv'
 
 
 def draw_chart_1():
@@ -19,9 +19,9 @@ def draw_chart_1():
     x = grouped_df['bsize']
     y = grouped_df['total']
     plt.scatter(x, y)
-    plt.xlabel('Bucket size')
+    plt.xlabel('Average bucket size')
     plt.ylabel('Execution time [s]')
-    plt.title('Execution time per bucket size')
+    plt.title('Execution time per average bucket size')
     plt.grid(True)
 
 
@@ -31,13 +31,17 @@ def draw_chart_2():
     pivoted_df = pd.pivot_table(df, values=[
                                 'total', 'draw', 'scatter', 'sort', 'gather'], index=['nthreads'], aggfunc='mean')
 
+#TODO use result from sync instead
     pivoted_df = pivoted_df.iloc[0] / pivoted_df
 
     _, ax = plt.subplots()
     for name, values in pivoted_df.iteritems():
         x = [i for i in values.index if i % 4 == 1]
         y = [values[i] for i in x]
-        ax.plot(x, y, label=name, marker='^', linestyle=':')
+        if name == 'total':
+            ax.plot(x, y, label=name, color='pink', marker='^', linestyle=':')
+        else:
+            ax.plot(x, y, label=name, marker='^', linestyle=':')
 
     plt.xlabel('Number of threads')
     plt.ylabel('Speedup')
@@ -82,10 +86,11 @@ def draw_chart_3():
     ax.set_xlabel("Number of threads")
     ax.set_ylabel("Execution time [s]")
     ax.set_title("Execution time per number of threads")
+    ax.set_axisbelow(True)
     ax.grid(True)
 
 
 # draw_chart_1()
-# draw_chart_2()
-draw_chart_3()
+draw_chart_2()
+# draw_chart_3()
 plt.show()
