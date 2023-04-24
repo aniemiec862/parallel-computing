@@ -18,7 +18,13 @@ def draw_chart_1():
 
     x = grouped_df['bsize']
     y = grouped_df['total']
-    plt.scatter(x, y)
+
+    minimum = grouped_df['total'].min()
+
+    plt.scatter(x, y, label='Execution time')
+    plt.scatter(x[grouped_df['total'].idxmin()], minimum, color='red', label='Minimum')
+
+    plt.legend()
     plt.xlabel('Average bucket size')
     plt.ylabel('Execution time [s]')
     plt.title('Execution time per average bucket size')
