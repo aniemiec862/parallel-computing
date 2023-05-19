@@ -9,6 +9,7 @@ def process_file(file_path, block_size=4096):
             if not block:
                 break
             yield block.split()
+
 def word_count(file_name):
     counter = collections.Counter()
     lines = process_file(file_name)
