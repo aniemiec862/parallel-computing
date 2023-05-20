@@ -16,8 +16,9 @@ def word_count(file_name):
     for words in lines:
         counter.update(words)
 
-    for word, count in counter.items():
-        print(f"{word} : {count}")
+    with open('tmp.txt', 'a') as f:
+        for word, count in counter.items():
+            f.write(f"{word} : {count}\n")
 
 
 experiment_id = sys.argv[1]

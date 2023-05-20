@@ -7,8 +7,9 @@ else
 fi
 
 times=$(($1 * 2))
-filename="gutenberg-$1GB.txt"
+hdfs dfs -rm -r words
+hdfs dfs -mkdir words
 
 for ((i=0; i<$times; i++)); do
-   cat gutenberg-500M.txt >> $filename
+    hadoop fs -put -f ./gutenberg-500M.txt ./words/data$i.txt
 done
