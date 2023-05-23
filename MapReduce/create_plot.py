@@ -1,19 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+nCores = 'nCores'
+confId = 'confId'
+dataSize = 'dataSize'
+time = 'time'
+
 def draw_time_plot(filename):
     data = pd.read_csv(filename, sep=";")
 
-    ncolumn = 'nCores'
-    confId = 'confId'
-    dataSize = 'dataSize'
-    timecolumn = 'time'
-
-    averaged_data = data.groupby([ncolumn, confId, dataSize]).mean().reset_index()
+    averaged_data = data.groupby([nCores, confId, dataSize]).mean().reset_index()
 
     plt.figure(figsize=(10, 6))
-    for key, grp in averaged_data.groupby([ncolumn, confId]):
-        plt.plot(grp[dataSize], grp[timecolumn], linestyle=':', marker='o', label=f"confId={key[1]}, nCores={key[0]}")
+    for key, grp in averaged_data.groupby([nCores, confId]):
+        plt.plot(grp[dataSize], grp[time], linestyle=':', marker='o', label=f"confId={key[1]}, nCores={key[0]}")
     plt.xlabel('Data size[GB]')
     plt.ylabel('Time [s]')
     plt.title('Time to data size')
@@ -26,26 +26,19 @@ def draw_time_plot(filename):
 def draw_speedup_plot(filename):
     data = pd.read_csv(filename, sep=";")
 
-    ncolumn = 'nCores'
-    confId = 'confId'
-    dataSize = 'dataSize'
-    timecolumn = 'time'
-
-
-    averaged_data = data.groupby([ncolumn, confId, dataSize]).mean().reset_index()
-
+    averaged_data = data.groupby([nCores, confId, dataSize]).mean().reset_index()
     reference_values = {
-        1: 51.703,
-        5: 253.662,
-        10: 523.132
+        1: 52.5436,
+        5: 253.6594,
+        10: 522.0772
     }
 
     averaged_data['speedup'] = averaged_data.apply(
-        lambda row: reference_values.get(row[dataSize], 1) / row[timecolumn], axis=1)
+        lambda row: reference_values.get(row[dataSize], 1) / row[time], axis=1)
 
     plt.figure(figsize=(10, 6))
-    for key, grp in averaged_data.groupby([ncolumn, confId]):
-        plt.plot(grp[dataSize], grp['speedup'], marker='o', label=f"confId={key[1]}, nCores={key[0]}")
+    for key, grp in averaged_data.groupby([nCores, confId]):
+        plt.plot(grp[dataSize], grp['speedup'], linestyle=':', marker='o', label=f"confId={key[1]}, nCores={key[0]}")
     plt.xlabel('Data size[GB]')
     plt.ylabel('Speedup')
     plt.title('Speedup to data size')
