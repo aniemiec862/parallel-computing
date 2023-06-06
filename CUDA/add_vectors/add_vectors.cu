@@ -1,4 +1,3 @@
-%%cu
 #include<stdio.h>
 #include<stdlib.h>
 #include<iostream>
@@ -79,40 +78,38 @@ void add_vectors(int threads_per_block, int N) {
 	cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
 
-	GpuTimer timer;
 	no_of_blocks = N/threads_per_block;
-
-	timer.Start();
 
 	device_add<<<no_of_blocks,threads_per_block>>>(d_a,d_b,d_c);
 
     cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
 
-	timer.Stop();
-
 	// print_output(a,b,c, N);
 
 	free(a); free(b); free(c);
     cudaFree(d_a); cudaFree(d_b); cudaFree(d_c);
-
-	float elapsed = timer.Elapsed();
-    std::cout << threads_per_block << ";" << N << ";" << elapsed << std::endl;
 }
 
 int main(void) {
-	int threads_per_block[5] = {4, 16, 64, 128, 256};
+	int threads_per_block[7] = {1, 2, 4, 16, 64, 128, 256};
 	int vector_sizes[5] = {3355443, 3355443 * 2, 3355443 * 3, 3355443 * 4, 3355443 * 5};
 	int number_of_retries = 5;
 
     std::cout << "threads_per_block;vector_size;time" << std::endl;
 
 	for (int i = 0; i < sizeof(threads_per_block) / sizeof(threads_per_block)[0]; i++) {
-			for (int j = 0; j < sizeof(vector_sizes) / sizeof(vector_sizes[0]); j++) {
-					for (int k = 0; k < number_of_retries; k++) {
-						add_vectors(threads_per_block[i], vector_sizes[j]);
-					}
-			}
-	}
+        for (int j = 0; j < sizeof(vector_sizes) / sizeof(vector_sizes[0]); j++) {
+		    for (int k = 0; k < number_of_retries; k++) {
+	            GpuTimer timer;
+                timer.Start();
 
+                add_vectors(threads_per_block[i], vector_sizes[j]);
+                timer.Stop();
+
+                float elapsed = timer.Elapsed();
+                std::cout << threads_per_block[i] << ";" << vector_sizes[j] << ";" << elapsed << std::endl;
+			}
+		}
+	}
 	return 0;
 }
