@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cuda_runtime.h>
-#include "kernel.h"
-#include "kernel.cu"
-#include "dev_array.h"
 #include <math.h>
 #include<stdio.h>
 #include<iostream>
@@ -48,7 +45,7 @@ struct GpuTimer
       }
 };
 
-int matrix_mul(int N)
+double matrix_mul(int N)
 {
     // Perform matrix multiplication C = A*B
     // where A, B and C are NxN matrices
@@ -104,21 +101,20 @@ int matrix_mul(int N)
         }
     }
 
-    cout << "Error: " << err << endl;
-
-    return 0;
+    return err;
 }
 
 int main()
 {
-    int no_retries = 3;
-    int N = 16;
+    int sizes[3] = {256, 512, 1024};
 
     std::cout << "N;" << "elapsed_time" << std::endl;
 
-    for (int retry = 0; i < no_retries; i++) {
+    for (int i = 0; i < 3; i++) {
         GpuTimer timer;
         timer.Start();
+
+        int N = sizes[i];
 
         matrix_mul(N);
         timer.Stop();

@@ -308,46 +308,33 @@ int MatrixMultiply(int block_size, const dim3 &dimsA,
 /**
  * Program main
  */
-int matrix_mul(int N) {
-  printf("[Matrix Multiply Using CUDA] - Starting...\n");
+int main() {
+    int N = 1024;
 
-  // This will pick the best possible CUDA capable device, otherwise
-  // override the device ID based on input provided at the command line
-  int dev = findCudaDevice(0, int[0]);
+    printf("[Matrix Multiply Using CUDA] - Starting...\n");
 
-  int block_size = 32;
+    int dev = gpuGetMaxGflopsDeviceId();
+    checkCudaErrors(cudaSetDevice(dev));
+    int major = 0, minor = 0;
+    checkCudaErrors(cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, dev));
+    checkCudaErrors(cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, dev));
+    printf("GPU Device %d: \"%s\" with compute capability %d.%d\n\n",
+    dev, _ConvertSMVer2ArchName(major, minor), major, minor);
 
-  dim3 dimsA(5 * 2 * block_size, 5 * 2 * block_size, 1);
-  dim3 dimsB(5 * 4 * block_size, 5 * 2 * block_size, 1);
+    int block_size = 32;
 
-  dimsA.x = N;
-  dimsA.y = N;
-  dimsB.x = N;
-  dimsB.y = N;
+    dim3 dimsA(5 * 2 * block_size, 5 * 2 * block_size, 1);
+    dim3 dimsB(5 * 4 * block_size, 5 * 2 * block_size, 1);
 
-  printf("MatrixA(%d,%d), MatrixB(%d,%d)\n", dimsA.x, dimsA.y, dimsB.x,
+    dimsA.x = N;
+    dimsA.y = N;
+    dimsB.x = N;
+    dimsB.y = N;
+
+    printf("MatrixA(%d,%d), MatrixB(%d,%d)\n", dimsA.x, dimsA.y, dimsB.x,
          dimsB.y);
 
-  int matrix_result = MatrixMultiply(block_size, dimsA, dimsB);
+    int matrix_result = MatrixMultiply(block_size, dimsA, dimsB);
 
-  exit(matrix_result);
-}
-
-int main()
-{
-    int no_retries = 3;
-    int N = 16;
-
-    std::cout << "N;" << "elapsed_time;" << std::endl;
-
-    for (int retry = 0; retry < no_retries; retry++) {
-        GpuTimer timer;
-        timer.Start();
-
-        matrix_mul(N);
-        timer.Stop();
-
-        float elapsed = timer.Elapsed();
-        std::cout << N << ";" << elapsed << ";" << std::endl;
-    }
+    exit(matrix_result);
 }
